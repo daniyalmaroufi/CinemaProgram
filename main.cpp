@@ -90,6 +90,22 @@ bool MovieExists(const vector<Movie>& Movies, string MovieName) {
     return false;
 }
 
+void PrintHours() {
+    cout << "          08:00";
+    cout << "               10:00";
+    cout << "               12:00";
+    cout << "               14:00";
+    cout << "               16:00";
+    cout << "               18:00";
+    cout << "               20:00";
+    cout << "               22:00";
+    cout << "               00:00" << endl;
+}
+
+void PrintMovieSchedule(const vector<Movie>& Movies, string MovieName) {
+    PrintHours();
+}
+
 void HandleUserInput(const vector<Movie>& Movies) {
     string UserInput;
     getline(cin, UserInput);
@@ -99,7 +115,7 @@ void HandleUserInput(const vector<Movie>& Movies) {
     if (UserInput.find("GET SCHEDULE ") != string::npos) {
         string MovieName = GetMovieNameFromInput(UserInput);
         if (MovieExists(Movies, MovieName)) {
-            // PrintMovieSchedule(Movies, MovieName);
+            PrintMovieSchedule(Movies, MovieName);
         }
     }
 }
@@ -109,10 +125,7 @@ int main(int argc, char* argv[]) {
     if (argc > 1) FileName = argv[1];
 
     vector<Movie> Movies = ReadCSVFile(FileName);
-    // PrintMovies(Movies);
-    while (true) {
-        HandleUserInput(Movies);
-    }
+    while (true) HandleUserInput(Movies);
 
     return 0;
 }
