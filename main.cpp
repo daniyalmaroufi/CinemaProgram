@@ -53,9 +53,7 @@ vector<Movie> ReadCSVFile(string FileName) {
     string Line;
     getline(File, Line);
     vector<string> Header = ReadHeader(Line);
-    while (getline(File, Line)) {
-        Movies.push_back(ReadMovie(Header, Line));
-    }
+    while (getline(File, Line)) Movies.push_back(ReadMovie(Header, Line));
     File.close();
     return Movies;
 }
@@ -71,8 +69,30 @@ void PrintMovies(const vector<Movie>& Movies) {
     sort(MovieNames.begin(), MovieNames.end());
     // remove duplicated values
     MovieNames.erase(unique(MovieNames.begin(), MovieNames.end()),
-    MovieNames.end());
+                     MovieNames.end());
     for (auto MovieName : MovieNames) cout << MovieName << endl;
+}
+
+string RemoveCommand(string UserInput, const string& Command) {
+    int index = 0;
+    index = UserInput.find(Command, index);
+    UserInput.replace(index, Command.length(), "");
+    return UserInput;
+}
+
+string GetMovieNameFromInput(string UserInput) {
+    return RemoveCommand(UserInput, "GET SCHEDULE ");
+}
+
+void HandleUserInput(const vector<Movie>& Movies) {
+    string UserInput;
+    getline(cin, UserInput);
+    if (UserInput == "GET ALL MOVIES") {
+        PrintMovies(Movies);
+    }
+    if (UserInput.find("GET SCHEDULE ") != string::npos) {
+        string MovieName = GetMovieNameFromInput(UserInput);
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -80,7 +100,8 @@ int main(int argc, char* argv[]) {
     if (argc > 1) FileName = argv[1];
 
     vector<Movie> Movies = ReadCSVFile(FileName);
-    PrintMovies(Movies);
+    // PrintMovies(Movies);
+    HandleUserInput(Movies);
 
     return 0;
 }
