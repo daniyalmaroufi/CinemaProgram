@@ -110,7 +110,9 @@ int main(int argc, char* argv[]) {
 
     vector<Movie> Movies = ReadCSVFile(FileName);
     // PrintMovies(Movies);
-    HandleUserInput(Movies);
+    while (true) {
+        HandleUserInput(Movies);
+    }
 
     return 0;
 }
