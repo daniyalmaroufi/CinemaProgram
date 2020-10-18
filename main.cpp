@@ -84,6 +84,12 @@ string GetMovieNameFromInput(string UserInput) {
     return RemoveCommand(UserInput, "GET SCHEDULE ");
 }
 
+bool MovieExists(const vector<Movie>& Movies, string MovieName) {
+    for (auto Movie : Movies)
+        if (Movie.MovieName == MovieName) return true;
+    return false;
+}
+
 void HandleUserInput(const vector<Movie>& Movies) {
     string UserInput;
     getline(cin, UserInput);
@@ -92,6 +98,9 @@ void HandleUserInput(const vector<Movie>& Movies) {
     }
     if (UserInput.find("GET SCHEDULE ") != string::npos) {
         string MovieName = GetMovieNameFromInput(UserInput);
+        if (MovieExists(Movies, MovieName)) {
+            // PrintMovieSchedule(Movies, MovieName);
+        }
     }
 }
 
