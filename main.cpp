@@ -9,6 +9,10 @@ using namespace std;
 
 const string SCHEDULE_FILE_NAME = "./schedule.csv";
 
+const vector<string> DAYS = {"Saturday  ", "Sunday    ", "Monday    ",
+                             "Tuesday   ", "Wednesday ", "Thursday  ",
+                             "Friday    "};
+
 struct Movie {
     string CinemaName;
     string MovieName;
@@ -104,6 +108,7 @@ void PrintHours() {
 
 void PrintMovieSchedule(const vector<Movie>& Movies, string MovieName) {
     PrintHours();
+    for (auto Day : DAYS) cout << Day << endl;
 }
 
 void HandleUserInput(const vector<Movie>& Movies) {
