@@ -90,6 +90,20 @@ void PrintHours() {
     cout << "               00:00";
 }
 
+vector<map<string, string>> GetMovieSchedule(
+    const vector<map<string, string>>& Movies, string MovieName) {
+    vector<map<string, string>> Schedule;
+    for (auto Movie : Movies) {
+        if (Movie["MovieName"] == MovieName) {
+            Schedule.push_back({{"Day", Movie["Day"]},
+                                {"StartingTime", Movie["StartingTime"]},
+                                {"FinishingTime", Movie["FinishingTime"]},
+                                {"CinemaName", Movie["CinemaName"]}});
+        }
+    }
+    return Schedule;
+}
+
 void PrintDay(string Day) {
     cout << endl << Day;
     for (int i = 0; i < DAY_TITLE_MAX_LENGTH - Day.length(); i++) cout << " ";
@@ -98,7 +112,12 @@ void PrintDay(string Day) {
 void PrintMovieSchedule(const vector<map<string, string>>& Movies,
                         string MovieName) {
     PrintHours();
-    for (auto Day : DAYS) PrintDay(Day);
+    // for (auto Day : DAYS) PrintDay(Day);
+    cout << MovieName << endl;
+    for (auto Movie : GetMovieSchedule(Movies, MovieName)) {
+        cout << Movie["Day"] << "\t" << Movie["StartingTime"] << " to "
+             << Movie["FinishingTime"] << " at " << Movie["CinemaName"] << endl;
+    }
 }
 
 void HandleUserInput(const vector<map<string, string>>& Movies) {
