@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -13,16 +14,6 @@ const vector<string> DAYS = {"Saturday  ", "Sunday    ", "Monday    ",
                              "Tuesday   ", "Wednesday ", "Thursday  ",
                              "Friday    "};
 
-struct Movie {
-    string CinemaName;
-    string MovieName;
-    string Day;
-    string StartingTime;
-    string FinishingTime;
-    int Price;
-    int Hall;
-};
-
 vector<string> ReadHeader(string Line) {
     vector<string> Header;
     string ColName;
@@ -33,25 +24,19 @@ vector<string> ReadHeader(string Line) {
     return Header;
 }
 
-Movie ReadMovie(vector<string> Header, string Line) {
+map<string, string> ReadMovie(vector<string> Header, string Line) {
     string RecordValue;
-    Movie TempMovie;
+    map<string, string> TempMovie;
     stringstream SStream(Line);
     for (auto ColName : Header) {
         getline(SStream, RecordValue, ',');
-        if (ColName == "CinemaName") TempMovie.CinemaName = RecordValue;
-        if (ColName == "MovieName") TempMovie.MovieName = RecordValue;
-        if (ColName == "Day") TempMovie.Day = RecordValue;
-        if (ColName == "StartingTime") TempMovie.StartingTime = RecordValue;
-        if (ColName == "FinishingTime") TempMovie.FinishingTime = RecordValue;
-        if (ColName == "Price") TempMovie.Price = stoi(RecordValue);
-        if (ColName == "Hall") TempMovie.Hall = stoi(RecordValue);
+        TempMovie[ColName] = RecordValue;
     }
     return TempMovie;
 }
 
-vector<Movie> ReadCSVFile(string FileName) {
-    vector<Movie> Movies;
+vector<map<string, string>> ReadCSVFile(string FileName) {
+    vector<map<string, string>> Movies;
     ifstream File;
     File.open(FileName);
     string Line;
@@ -62,13 +47,13 @@ vector<Movie> ReadCSVFile(string FileName) {
     return Movies;
 }
 
-vector<string> GetMovieNames(const vector<Movie>& Movies) {
+vector<string> GetMovieNames(const vector<map<string, string>>& Movies) {
     vector<string> MovieNames;
-    for (auto Movie : Movies) MovieNames.push_back(Movie.MovieName);
+    for (auto Movie : Movies) MovieNames.push_back(Movie["MovieName"]);
     return MovieNames;
 }
 
-void PrintMovies(const vector<Movie>& Movies) {
+void PrintMovies(const vector<map<string, string>>& Movies) {
     vector<string> MovieNames = GetMovieNames(Movies);
     sort(MovieNames.begin(), MovieNames.end());
     // remove duplicated values
@@ -88,9 +73,9 @@ string GetMovieNameFromInput(string UserInput) {
     return RemoveCommand(UserInput, "GET SCHEDULE ");
 }
 
-bool MovieExists(const vector<Movie>& Movies, string MovieName) {
+bool MovieExists(const vector<map<string, string>>& Movies, string MovieName) {
     for (auto Movie : Movies)
-        if (Movie.MovieName == MovieName) return true;
+        if (Movie["MovieName"] == MovieName) return true;
     return false;
 }
 
@@ -106,12 +91,13 @@ void PrintHours() {
     cout << "               00:00" << endl;
 }
 
-void PrintMovieSchedule(const vector<Movie>& Movies, string MovieName) {
+void PrintMovieSchedule(const vector<map<string, string>>& Movies,
+                        string MovieName) {
     PrintHours();
     for (auto Day : DAYS) cout << Day << endl;
 }
 
-void HandleUserInput(const vector<Movie>& Movies) {
+void HandleUserInput(const vector<map<string, string>>& Movies) {
     string UserInput;
     getline(cin, UserInput);
     if (UserInput == "GET ALL MOVIES") {
@@ -129,7 +115,7 @@ int main(int argc, char* argv[]) {
     string FileName = SCHEDULE_FILE_NAME;
     if (argc > 1) FileName = argv[1];
 
-    vector<Movie> Movies = ReadCSVFile(FileName);
+    vector<map<string, string>> Movies = ReadCSVFile(FileName);
     while (true) HandleUserInput(Movies);
 
     return 0;
