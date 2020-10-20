@@ -9,10 +9,9 @@
 using namespace std;
 
 const string SCHEDULE_FILE_NAME = "./schedule.csv";
-
-const vector<string> DAYS = {"Saturday  ", "Sunday    ", "Monday    ",
-                             "Tuesday   ", "Wednesday ", "Thursday  ",
-                             "Friday    "};
+const int DAY_TITLE_MAX_LENGTH = 10;
+const vector<string> DAYS = {"Saturday",  "Sunday",   "Monday", "Tuesday",
+                             "Wednesday", "Thursday", "Friday"};
 
 vector<string> ReadHeader(string Line) {
     vector<string> Header;
@@ -88,13 +87,18 @@ void PrintHours() {
     cout << "               18:00";
     cout << "               20:00";
     cout << "               22:00";
-    cout << "               00:00" << endl;
+    cout << "               00:00";
+}
+
+void PrintDay(string Day) {
+    cout << endl << Day;
+    for (int i = 0; i < DAY_TITLE_MAX_LENGTH - Day.length(); i++) cout << " ";
 }
 
 void PrintMovieSchedule(const vector<map<string, string>>& Movies,
                         string MovieName) {
     PrintHours();
-    for (auto Day : DAYS) cout << Day << endl;
+    for (auto Day : DAYS) PrintDay(Day);
 }
 
 void HandleUserInput(const vector<map<string, string>>& Movies) {
