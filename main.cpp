@@ -90,18 +90,31 @@ void PrintHours() {
     cout << "               00:00";
 }
 
-vector<map<string, string>> GetMovieSchedule(
-    const vector<map<string, string>>& Movies, string MovieName) {
+vector<map<string, string>> GetMovieScheduleOfDay(
+    const vector<map<string, string>>& Movies, string MovieName, string Day) {
     vector<map<string, string>> Schedule;
     for (auto Movie : Movies) {
-        if (Movie["MovieName"] == MovieName) {
-            Schedule.push_back({{"Day", Movie["Day"]},
-                                {"StartingTime", Movie["StartingTime"]},
+        if (Movie["MovieName"] == MovieName && Movie["Day"] == Day) {
+            Schedule.push_back({{"StartingTime", Movie["StartingTime"]},
                                 {"FinishingTime", Movie["FinishingTime"]},
                                 {"CinemaName", Movie["CinemaName"]}});
         }
     }
     return Schedule;
+}
+
+bool CompareTimes(const map<string, string>& FirstMovie,
+                  const map<string, string>& SecondMovie) {
+    return FirstMovie.find("StartingTime")->second <
+           SecondMovie.find("StartingTime")->second;
+}
+
+vector<map<string, string>> SortScheduleOfDay(
+    const vector<map<string, string>>& Schedule) {
+    vector<map<string, string>> SortedSchedule = Schedule;
+    sort(SortedSchedule.begin(), SortedSchedule.end(), CompareTimes);
+
+    return SortedSchedule;
 }
 
 void PrintDay(string Day) {
@@ -114,9 +127,14 @@ void PrintMovieSchedule(const vector<map<string, string>>& Movies,
     PrintHours();
     // for (auto Day : DAYS) PrintDay(Day);
     cout << MovieName << endl;
-    for (auto Movie : GetMovieSchedule(Movies, MovieName)) {
-        cout << Movie["Day"] << "\t" << Movie["StartingTime"] << " to "
-             << Movie["FinishingTime"] << " at " << Movie["CinemaName"] << endl;
+    for (auto Day : DAYS) {
+        cout << Day << endl;
+        for (auto Movie :
+             SortScheduleOfDay(GetMovieScheduleOfDay(Movies, MovieName, Day))) {
+            cout << "\t" << Movie["StartingTime"] << " to "
+                 << Movie["FinishingTime"] << " at " << Movie["CinemaName"]
+                 << endl;
+        }
     }
 }
 
