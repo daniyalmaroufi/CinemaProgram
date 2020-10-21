@@ -95,12 +95,22 @@ vector<map<string, string>> GetMovieScheduleOfDay(
     vector<map<string, string>> Schedule;
     for (auto Movie : Movies) {
         if (Movie["MovieName"] == MovieName && Movie["Day"] == Day) {
-            Schedule.push_back({{"StartingTime", Movie["StartingTime"]},
-                                {"FinishingTime", Movie["FinishingTime"]},
-                                {"CinemaName", Movie["CinemaName"]}});
+            Schedule.push_back(Movie);
         }
     }
     return Schedule;
+}
+
+bool CompareCinemaNames(const map<string, string>& FirstMovie,
+                  const map<string, string>& SecondMovie) {
+    return FirstMovie.find("CinemaName")->second <
+           SecondMovie.find("CinemaName")->second;
+}
+
+bool ComparePrices(const map<string, string>& FirstMovie,
+                  const map<string, string>& SecondMovie) {
+    return FirstMovie.find("Price")->second <
+           SecondMovie.find("Price")->second;
 }
 
 bool CompareTimes(const map<string, string>& FirstMovie,
@@ -112,6 +122,12 @@ bool CompareTimes(const map<string, string>& FirstMovie,
 vector<map<string, string>> SortScheduleOfDay(
     const vector<map<string, string>>& Schedule) {
     vector<map<string, string>> SortedSchedule = Schedule;
+
+    // Sort with CinemaName
+    sort(SortedSchedule.begin(), SortedSchedule.end(), CompareCinemaNames);
+    // Sort with Price
+    sort(SortedSchedule.begin(), SortedSchedule.end(), ComparePrices);
+    // Sort with Starting Time
     sort(SortedSchedule.begin(), SortedSchedule.end(), CompareTimes);
 
     return SortedSchedule;
