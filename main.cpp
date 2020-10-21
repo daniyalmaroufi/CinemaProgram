@@ -102,15 +102,14 @@ vector<map<string, string>> GetMovieScheduleOfDay(
 }
 
 bool CompareCinemaNames(const map<string, string>& FirstMovie,
-                  const map<string, string>& SecondMovie) {
+                        const map<string, string>& SecondMovie) {
     return FirstMovie.find("CinemaName")->second <
            SecondMovie.find("CinemaName")->second;
 }
 
 bool ComparePrices(const map<string, string>& FirstMovie,
-                  const map<string, string>& SecondMovie) {
-    return FirstMovie.find("Price")->second <
-           SecondMovie.find("Price")->second;
+                   const map<string, string>& SecondMovie) {
+    return FirstMovie.find("Price")->second < SecondMovie.find("Price")->second;
 }
 
 bool CompareTimes(const map<string, string>& FirstMovie,
@@ -119,18 +118,38 @@ bool CompareTimes(const map<string, string>& FirstMovie,
            SecondMovie.find("StartingTime")->second;
 }
 
+bool HaveInterference(const map<string, string>& FirstMovie,
+                      const map<string, string>& SecondMovie) {
+    if (FirstMovie.find("StartingTime")->second <
+            SecondMovie.find("StartingTime")->second &&
+        FirstMovie.find("FinishingTime")->second >
+            SecondMovie.find("StartingTime")->second)
+        return true;
+    if (FirstMovie.find("StartingTime")->second ==
+            SecondMovie.find("StartingTime")->second &&
+        FirstMovie.find("FinishingTime")->second ==
+            SecondMovie.find("FinishingTime")->second)
+        return true;
+    return false;
+}
+
 vector<map<string, string>> SortScheduleOfDay(
-    const vector<map<string, string>>& Schedule) {
-    vector<map<string, string>> SortedSchedule = Schedule;
-
+    vector<map<string, string>> Schedule) {
     // Sort with CinemaName
-    sort(SortedSchedule.begin(), SortedSchedule.end(), CompareCinemaNames);
+    sort(Schedule.begin(), Schedule.end(), CompareCinemaNames);
     // Sort with Price
-    sort(SortedSchedule.begin(), SortedSchedule.end(), ComparePrices);
+    sort(Schedule.begin(), Schedule.end(), ComparePrices);
     // Sort with Starting Time
-    sort(SortedSchedule.begin(), SortedSchedule.end(), CompareTimes);
+    sort(Schedule.begin(), Schedule.end(), CompareTimes);
 
-    return SortedSchedule;
+    vector<map<string, string>> ChosenSchedule;
+    ChosenSchedule.push_back(Schedule[0]);
+
+    for (int i = 1; i < Schedule.size(); i++) {
+        if (!HaveInterference(ChosenSchedule.back(), Schedule[i]))
+            ChosenSchedule.push_back(Schedule[i]);
+    }
+    return ChosenSchedule;
 }
 
 void PrintDay(string Day) {
