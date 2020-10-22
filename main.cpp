@@ -189,6 +189,12 @@ vector<pair<int, int>> ConvertScheduleToColumns(
     return Columns;
 }
 
+bool CheckPositiveSign(int ColumnNo, const vector<pair<int, int>>& Columns) {
+    for (auto Column : Columns)
+        if (ColumnNo == Column.first || ColumnNo == Column.second) return true;
+    return false;
+}
+
 void PrintBoxes(const vector<map<string, string>>& FirstSchedule,
                 const vector<map<string, string>>& SecondSchedule) {
     vector<map<string, string>> Schedule = FirstSchedule;
@@ -198,24 +204,17 @@ void PrintBoxes(const vector<map<string, string>>& FirstSchedule,
         sort(Schedule.begin(), Schedule.end(), CompareTimes);
     }
     vector<pair<int, int>> Columns = ConvertScheduleToColumns(Schedule);
-    for (auto c : Columns) {
-        cout << c.first << "->" << c.second << endl;
-    }
+    // for (auto c : Columns) {
+    //     cout << c.first << "->" << c.second << endl;
+    // }
     int ColumnNo = DAY_TITLE_MAX_LENGTH;
     PrintCharacters(DAY_TITLE_MAX_LENGTH, ' ');
-    for (auto Movie : Schedule) {
-        int TileLength =
-            BlockLength(Movie["StartingTime"], Movie["FinishingTime"]);
-        int StartingColumn = StartingTimeToColumn(Movie["StartingTime"]);
-
-        PrintCharacters(StartingColumn - ColumnNo, ' ');
-
-        if (StartingColumn + 1 != ColumnNo) cout << "+";
-
-        PrintCharacters(TileLength, '-');
-
-        cout << "+";
-        ColumnNo = StartingColumn + TileLength + 2;
+    for (int ColumnNo = DAY_TITLE_MAX_LENGTH; ColumnNo < TOTAL_COLUMNS;
+         ColumnNo++) {
+        if (CheckPositiveSign(ColumnNo, Columns)) {
+            cout << "+";
+            continue;
+        }
     }
     PrintCharacters(TOTAL_COLUMNS - ColumnNo + 1, ' ');
     cout << endl;
