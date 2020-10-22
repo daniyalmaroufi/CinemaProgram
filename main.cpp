@@ -90,7 +90,7 @@ void PrintHours() {
     cout << "               18:00";
     cout << "               20:00";
     cout << "               22:00";
-    cout << "               00:00";
+    cout << "               00:00" << endl;
 }
 
 vector<map<string, string>> GetMovieScheduleOfDay(
@@ -173,31 +173,51 @@ int BlockLength(const string& StartingTime, const string& FinishingTime) {
     return (TimeToNumber(FinishingTime) - TimeToNumber(StartingTime)) * 5 - 1;
 }
 
-void PrintSpaces(int Length) {
-    for (int i = 0; i < Length; i++) cout << " ";
+void PrintCharacters(int Length, char Character) {
+    for (int i = 0; i < Length; i++) cout << Character;
+}
+
+void PrintSingleDayBox(const vector<map<string, string>>& Schedule) {
+    int Column = 1;
+    for (auto Movie : Schedule) {
+        int TileLength =
+            BlockLength(Movie["StartingTime"], Movie["FinishingTime"]);
+        int StartingColumn = StartingTimeToColumn(Movie["StartingTime"]);
+
+        PrintCharacters(StartingColumn - Column, ' ');
+
+        if (StartingColumn + 1 != Column) cout << "+";
+
+        PrintCharacters(TileLength, '-');
+
+        cout << "+";
+        Column = StartingColumn + TileLength + 2;
+    }
+    PrintCharacters(TOTAL_COLUMNS - Column + 1, ' ');
+    cout << endl;
 }
 
 void PrintDay(const string& Day, const vector<map<string, string>>& Schedule) {
-    cout << endl << Day;
-    PrintSpaces(DAY_TITLE_MAX_LENGTH - Day.length());
+    cout << Day;
+    PrintCharacters(DAY_TITLE_MAX_LENGTH - Day.length(), ' ');
     int Column = DAY_TITLE_MAX_LENGTH + 1;
     for (auto Movie : Schedule) {
         int TileLength =
             BlockLength(Movie["StartingTime"], Movie["FinishingTime"]);
         int StartingColumn = StartingTimeToColumn(Movie["StartingTime"]);
 
-        PrintSpaces(StartingColumn - Column);
+        PrintCharacters(StartingColumn - Column, ' ');
 
         if (StartingColumn + 1 != Column) cout << "|";
 
         cout << Movie["CinemaName"];
 
-        PrintSpaces(TileLength - Movie["CinemaName"].length());
+        PrintCharacters(TileLength - Movie["CinemaName"].length(), ' ');
 
         cout << "|";
         Column = StartingColumn + TileLength + 2;
     }
-    PrintSpaces(TOTAL_COLUMNS - Column + 1);
+    PrintCharacters(TOTAL_COLUMNS - Column + 1, ' ');
     cout << endl;
 }
 
@@ -205,10 +225,14 @@ void PrintMovieSchedule(const vector<map<string, string>>& Movies,
                         string MovieName) {
     PrintHours();
     // for (auto Day : DAYS) PrintDay(Day);
+    vector<map<string, string>> DaySchedule;
     for (auto Day : DAYS) {
-        PrintDay(Day, SortScheduleOfDay(
-                          GetMovieScheduleOfDay(Movies, MovieName, Day)));
+        DaySchedule =
+            SortScheduleOfDay(GetMovieScheduleOfDay(Movies, MovieName, Day));
+        PrintSingleDayBox(DaySchedule);
+        PrintDay(Day, DaySchedule);
     }
+    PrintSingleDayBox(DaySchedule);
 }
 
 void HandleUserInput(const vector<map<string, string>>& Movies) {
