@@ -9,9 +9,11 @@
 using namespace std;
 
 const string SCHEDULE_FILE_NAME = "./schedule.csv";
+
 const int DAY_TITLE_MAX_LENGTH = 10;
 const vector<string> DAYS = {"Saturday",  "Sunday",   "Monday", "Tuesday",
                              "Wednesday", "Thursday", "Friday"};
+const int HALF_HOUR_COLUMNS = 5;
 
 vector<string> ReadHeader(string Line) {
     vector<string> Header;
@@ -152,24 +154,37 @@ vector<map<string, string>> SortScheduleOfDay(
     return ChosenSchedule;
 }
 
-void PrintDay(string Day) {
+float TimeToNumber(const string& Time) {
+    stringstream SStream(Time);
+    string Hour, Minute;
+    getline(SStream, Hour, ':');
+    getline(SStream, Minute, ':');
+    float M = stoi(Minute);
+    return stoi(Hour) * 2 + M / 30;
+}
+
+int StartingTimeToColumn(const string& Time) {
+    return DAY_TITLE_MAX_LENGTH +
+           (TimeToNumber(Time) - TimeToNumber("08:00")) * HALF_HOUR_COLUMNS;
+}
+
+void PrintDay(const string& Day, const vector<map<string, string>>& Schedule) {
     cout << endl << Day;
     for (int i = 0; i < DAY_TITLE_MAX_LENGTH - Day.length(); i++) cout << " ";
+    int Column = DAY_TITLE_MAX_LENGTH + 1;
+    for (auto Movie : Schedule) {
+        cout << "\t" << Movie["StartingTime"] << " to "
+             << Movie["FinishingTime"] << " at " << Movie["CinemaName"] << endl;
+    }
 }
 
 void PrintMovieSchedule(const vector<map<string, string>>& Movies,
                         string MovieName) {
     PrintHours();
     // for (auto Day : DAYS) PrintDay(Day);
-    cout << MovieName << endl;
     for (auto Day : DAYS) {
-        cout << Day << endl;
-        for (auto Movie :
-             SortScheduleOfDay(GetMovieScheduleOfDay(Movies, MovieName, Day))) {
-            cout << "\t" << Movie["StartingTime"] << " to "
-                 << Movie["FinishingTime"] << " at " << Movie["CinemaName"]
-                 << endl;
-        }
+        PrintDay(Day, SortScheduleOfDay(
+                          GetMovieScheduleOfDay(Movies, MovieName, Day)));
     }
 }
 
