@@ -168,8 +168,13 @@ int StartingTimeToColumn(const string& Time) {
            (TimeToNumber(Time) - TimeToNumber("08:00")) * HALF_HOUR_COLUMNS;
 }
 
+void PrintSpaces(int Length){
+    for (int i = 0; i < Length; i++) cout << " ";
+}
+
 void PrintDay(const string& Day, const vector<map<string, string>>& Schedule) {
     cout << endl << Day;
+    PrintSpaces(DAY_TITLE_MAX_LENGTH - Day.length());
     for (int i = 0; i < DAY_TITLE_MAX_LENGTH - Day.length(); i++) cout << " ";
     int Column = DAY_TITLE_MAX_LENGTH + 1;
     for (auto Movie : Schedule) {
