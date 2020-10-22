@@ -232,15 +232,10 @@ void PrintDay(const string& Day, const vector<map<string, string>>& Schedule) {
         int TileLength =
             BlockLength(Movie["StartingTime"], Movie["FinishingTime"]);
         int StartingColumn = StartingTimeToColumn(Movie["StartingTime"]);
-
         PrintCharacters(StartingColumn - ColumnNo, ' ');
-
         if (StartingColumn + 1 != ColumnNo) cout << "|";
-
         cout << Movie["CinemaName"];
-
         PrintCharacters(TileLength - Movie["CinemaName"].length(), ' ');
-
         cout << "|";
         ColumnNo = StartingColumn + TileLength + 2;
     }
@@ -257,11 +252,110 @@ void PrintMovieSchedule(const vector<map<string, string>>& Movies,
     for (auto Day : DAYS) {
         TodaySchedule =
             SortSchedule(GetMovieScheduleOfDay(Movies, MovieName, Day));
-        PrintBoxes(TodaySchedule,YesterdaySchedule);
+        PrintBoxes(TodaySchedule, YesterdaySchedule);
         PrintDay(Day, TodaySchedule);
         YesterdaySchedule = TodaySchedule;
     }
     PrintBoxes(YesterdaySchedule, YesterdaySchedule);
+}
+
+int CalculateWidth(const map<string, string>& Movie) {
+    return (TimeToNumber(Movie.find("FinishingTime")->second) -
+            TimeToNumber(Movie.find("StartingTime")->second)) *
+           50;
+}
+
+void HTMLMovieSchedule(const vector<map<string, string>>& Movies,
+                       string MovieName) {
+    ofstream HTML(MovieName + ".html");
+    HTML << "<html lang=\"en\">" << endl;
+    HTML << "<head>" << endl;
+    HTML << "<title></title>" << endl;
+    HTML << "<link rel=\"stylesheet\" href=\"./style.css\" />" << endl;
+    HTML << "</head>" << endl;
+    HTML << "<body>" << endl;
+    HTML << "<div class=\"time-box\" style=\"left: 100px;\"><p>08:00</p></div>"
+         << endl;
+    HTML << "<div class=\"time-box\" style=\"left: 300px;\"><p>10:00</p></div>"
+         << endl;
+    HTML << "<div class=\"time-box\" style=\"left: 500px;\"><p>12:00</p></div>"
+         << endl;
+    HTML << "<div class=\"time-box\" style=\"left: 700px;\"><p>14:00</p></div>"
+         << endl;
+    HTML << "<div class=\"time-box\" style=\"left: 900px;\"><p>16:00</p></div>"
+         << endl;
+    HTM << endlL
+        << "<div class=\"time-box\" style=\"left: 1100px;\"><p>18:00</p></div>"
+        << endl;
+    HTM << endlL
+        << "<div class=\"time-box\" style=\"left: 1300px;\"><p>20:00</p></div>"
+        << endl;
+    HTM << endlL
+        << "<div class=\"time-box\" style=\"left: 1500px;\"><p>22:00</p></div>"
+        << endl;
+    HTM << endlL
+        << "<div class=\"time-box\" style=\"left: 1700px;\"><p>00:00</p></div>"
+        << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 100px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 200px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 300px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 400px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 500px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 600px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 700px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 800px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 900px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 1000px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 1100px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 1200px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 1300px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 1400px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 1500px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 1600px;\"></div>"
+         << endl;
+    HTML << "<div class=\"vertical-line\" style=\"left: 1700px;\"></div>"
+         << endl;
+    HTML << "<div class=\"day-box\" style=\"top: 60px;\">Saturday</div>"
+         << endl;
+    HTML << "<div class=\"day-box\" style=\"top: 110px;\">Sunday</div>" << endl;
+    HTML << "<div class=\"day-box\" style=\"top: 160px;\">Monday</div>" << endl;
+    HTML << "<div class=\"day-box\" style=\"top: 210px;\">Tuesday</div>"
+         << endl;
+    HTML << "<div class=\"day-box\" style=\"top: 260px;\">Wednesday</div>"
+         << endl;
+    HTML << "<div class=\"day-box\" style=\"top: 310px;\">Thursday</div>"
+         << endl;
+    HTML << "<div class=\"day-box\" style=\"top: 360px;\">Friday</div>" << endl;
+
+    vector<map<string, string>> TodaySchedule;
+    for (auto Day : DAYS) {
+        TodaySchedule =
+            SortSchedule(GetMovieScheduleOfDay(Movies, MovieName, Day));
+        for (auto Movie : TodaySchedule) {
+            HTML << "<div class=\"record-box\" style=\"width: "
+                 << CalculateWidth(Movie)
+                 << "px; left: "<<CalculateLeft(Movie)<<"px; top:360px; \">"<<Movie["MovieName"]<<"</div>";
+        }
+    }
+
+    HTML << "</body>" << endl;
+    HTML << "</html>" << endl;
+    HTML.close();
 }
 
 void HandleUserInput(const vector<map<string, string>>& Movies) {
@@ -274,6 +368,7 @@ void HandleUserInput(const vector<map<string, string>>& Movies) {
         string MovieName = GetMovieNameFromInput(UserInput);
         if (MovieExists(Movies, MovieName)) {
             PrintMovieSchedule(Movies, MovieName);
+            HTMLMovieSchedule(Movies, MovieName);
         }
     }
 }
