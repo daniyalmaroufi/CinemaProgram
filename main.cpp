@@ -9,8 +9,6 @@
 
 using namespace std;
 
-const string SCHEDULE_FILE_NAME = "./schedule.csv";
-
 const int DAY_TITLE_MAX_LENGTH = 10;
 const vector<string> DAYS = {"Saturday",  "Sunday",   "Monday", "Tuesday",
                              "Wednesday", "Thursday", "Friday"};
@@ -373,22 +371,23 @@ void HTMLMovieSchedule(const vector<map<string, string>>& Movies,
 
 void HandleUserInput(const vector<map<string, string>>& Movies) {
     string UserInput;
-    getline(cin, UserInput);
-    if (UserInput == "GET ALL MOVIES") {
-        PrintMovies(Movies);
-    }
-    if (UserInput.find("GET SCHEDULE ") != string::npos) {
-        string MovieName = GetMovieNameFromInput(UserInput);
-        if (MovieExists(Movies, MovieName)) {
-            PrintMovieSchedule(Movies, MovieName);
-            HTMLMovieSchedule(Movies, MovieName);
+    while (getline(cin, UserInput)) {
+        if (UserInput == "GET ALL MOVIES") {
+            PrintMovies(Movies);
+        }
+        if (UserInput.find("GET SCHEDULE ") != string::npos) {
+            string MovieName = GetMovieNameFromInput(UserInput);
+            if (MovieExists(Movies, MovieName)) {
+                PrintMovieSchedule(Movies, MovieName);
+                HTMLMovieSchedule(Movies, MovieName);
+            }
         }
     }
 }
 
 int main(int argc, char* argv[]) {
     vector<map<string, string>> Movies = ReadCSVFile(argv[1]);
-    while (true) HandleUserInput(Movies);
+    HandleUserInput(Movies);
 
     return 0;
 }
