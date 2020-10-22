@@ -182,8 +182,9 @@ vector<pair<int, int>> ConvertScheduleToColumns(
     const vector<map<string, string>>& Schedule) {
     vector<pair<int, int>> Columns;
     for (auto Movie : Schedule) {
-        Columns.push_back(make_pair(TimeToNumber(Movie["StartingTime"]),
-                                    TimeToNumber(Movie["FinishingTime"])));
+        Columns.push_back(
+            make_pair(StartingTimeToColumn(Movie["StartingTime"]),
+                      StartingTimeToColumn(Movie["FinishingTime"])));
     }
     return Columns;
 }
@@ -200,46 +201,47 @@ void PrintBoxes(const vector<map<string, string>>& FirstSchedule,
     for (auto c : Columns) {
         cout << c.first << "->" << c.second << endl;
     }
-    int Column = 1;
+    int ColumnNo = DAY_TITLE_MAX_LENGTH;
+    PrintCharacters(DAY_TITLE_MAX_LENGTH, ' ');
     for (auto Movie : Schedule) {
         int TileLength =
             BlockLength(Movie["StartingTime"], Movie["FinishingTime"]);
         int StartingColumn = StartingTimeToColumn(Movie["StartingTime"]);
 
-        PrintCharacters(StartingColumn - Column, ' ');
+        PrintCharacters(StartingColumn - ColumnNo, ' ');
 
-        if (StartingColumn + 1 != Column) cout << "+";
+        if (StartingColumn + 1 != ColumnNo) cout << "+";
 
         PrintCharacters(TileLength, '-');
 
         cout << "+";
-        Column = StartingColumn + TileLength + 2;
+        ColumnNo = StartingColumn + TileLength + 2;
     }
-    PrintCharacters(TOTAL_COLUMNS - Column + 1, ' ');
+    PrintCharacters(TOTAL_COLUMNS - ColumnNo + 1, ' ');
     cout << endl;
 }
 
 void PrintDay(const string& Day, const vector<map<string, string>>& Schedule) {
     cout << Day;
     PrintCharacters(DAY_TITLE_MAX_LENGTH - Day.length(), ' ');
-    int Column = DAY_TITLE_MAX_LENGTH + 1;
+    int ColumnNo = DAY_TITLE_MAX_LENGTH + 1;
     for (auto Movie : Schedule) {
         int TileLength =
             BlockLength(Movie["StartingTime"], Movie["FinishingTime"]);
         int StartingColumn = StartingTimeToColumn(Movie["StartingTime"]);
 
-        PrintCharacters(StartingColumn - Column, ' ');
+        PrintCharacters(StartingColumn - ColumnNo, ' ');
 
-        if (StartingColumn + 1 != Column) cout << "|";
+        if (StartingColumn + 1 != ColumnNo) cout << "|";
 
         cout << Movie["CinemaName"];
 
         PrintCharacters(TileLength - Movie["CinemaName"].length(), ' ');
 
         cout << "|";
-        Column = StartingColumn + TileLength + 2;
+        ColumnNo = StartingColumn + TileLength + 2;
     }
-    PrintCharacters(TOTAL_COLUMNS - Column + 1, ' ');
+    PrintCharacters(TOTAL_COLUMNS - ColumnNo + 1, ' ');
     cout << endl;
 }
 
