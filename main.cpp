@@ -265,6 +265,21 @@ int CalculateWidth(const map<string, string>& Movie) {
            50;
 }
 
+int CalculateLeft(const map<string, string>& Movie) {
+    return (TimeToNumber(Movie.find("StartingTime")->second) -
+            TimeToNumber("08:00")) *
+               50 +
+           100;
+}
+
+int CalculateTop(string Day) {
+    int DayNo;
+    for (int i = 0; i < DAYS.size(); i++)
+        if (Day == DAYS[i]) DayNo = i;
+
+    return 60 + DayNo * 50;
+}
+
 void HTMLMovieSchedule(const vector<map<string, string>>& Movies,
                        string MovieName) {
     ofstream HTML(MovieName + ".html");
@@ -284,18 +299,14 @@ void HTMLMovieSchedule(const vector<map<string, string>>& Movies,
          << endl;
     HTML << "<div class=\"time-box\" style=\"left: 900px;\"><p>16:00</p></div>"
          << endl;
-    HTM << endlL
-        << "<div class=\"time-box\" style=\"left: 1100px;\"><p>18:00</p></div>"
-        << endl;
-    HTM << endlL
-        << "<div class=\"time-box\" style=\"left: 1300px;\"><p>20:00</p></div>"
-        << endl;
-    HTM << endlL
-        << "<div class=\"time-box\" style=\"left: 1500px;\"><p>22:00</p></div>"
-        << endl;
-    HTM << endlL
-        << "<div class=\"time-box\" style=\"left: 1700px;\"><p>00:00</p></div>"
-        << endl;
+    HTML << "<div class=\"time-box\" style=\"left: 1100px;\"><p>18:00</p></div>"
+         << endl;
+    HTML << "<div class=\"time-box\" style=\"left: 1300px;\"><p>20:00</p></div>"
+         << endl;
+    HTML << "<div class=\"time-box\" style=\"left: 1500px;\"><p>22:00</p></div>"
+         << endl;
+    HTML << "<div class=\"time-box\" style=\"left: 1700px;\"><p>00:00</p></div>"
+         << endl;
     HTML << "<div class=\"vertical-line\" style=\"left: 100px;\"></div>"
          << endl;
     HTML << "<div class=\"vertical-line\" style=\"left: 200px;\"></div>"
@@ -349,7 +360,9 @@ void HTMLMovieSchedule(const vector<map<string, string>>& Movies,
         for (auto Movie : TodaySchedule) {
             HTML << "<div class=\"record-box\" style=\"width: "
                  << CalculateWidth(Movie)
-                 << "px; left: "<<CalculateLeft(Movie)<<"px; top:360px; \">"<<Movie["MovieName"]<<"</div>";
+                 << "px; left: " << CalculateLeft(Movie)
+                 << "px; top:" << CalculateTop(Day) << "px; \">"
+                 << Movie["CinemaName"] << "</div>";
         }
     }
 
