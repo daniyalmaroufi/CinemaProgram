@@ -179,7 +179,9 @@ void PrintCharacters(int Length, char Character) {
 }
 
 vector<pair<int, int>> ConvertScheduleToColumns(
-    const vector<map<string, string>>& Schedule) {
+    vector<map<string, string>> Schedule) {
+    sort(Schedule.begin(), Schedule.end(), CompareTimes);
+
     vector<pair<int, int>> Columns;
     for (auto Movie : Schedule) {
         Columns.push_back(
@@ -203,18 +205,12 @@ bool CheckNegativeSign(int ColumnNo, const vector<pair<int, int>>& Columns) {
 
 void PrintBoxes(const vector<map<string, string>>& FirstSchedule,
                 const vector<map<string, string>>& SecondSchedule) {
-    
     vector<map<string, string>> Schedule = FirstSchedule;
-    if (!SecondSchedule.empty()) {
-        Schedule.insert(Schedule.end(), SecondSchedule.begin(),
-                        SecondSchedule.end());
-        sort(Schedule.begin(), Schedule.end(), CompareTimes);
-    }
+    Schedule.insert(Schedule.end(), SecondSchedule.begin(),
+                    SecondSchedule.end());
     vector<pair<int, int>> Columns = ConvertScheduleToColumns(Schedule);
 
-    // PrintCharacters(DAY_TITLE_MAX_LENGTH - 1, ' ');
-    for (int ColumnNo = 1; ColumnNo < TOTAL_COLUMNS;
-         ColumnNo++) {
+    for (int ColumnNo = 1; ColumnNo < TOTAL_COLUMNS; ColumnNo++) {
         if (CheckPositiveSign(ColumnNo, Columns)) {
             cout << "+";
             continue;
@@ -223,9 +219,9 @@ void PrintBoxes(const vector<map<string, string>>& FirstSchedule,
             cout << "-";
             continue;
         }
-        cout<<" ";
+        cout << " ";
     }
-    cout << endl;
+    cout << " " << endl;
 }
 
 void PrintDay(const string& Day, const vector<map<string, string>>& Schedule) {
@@ -255,19 +251,17 @@ void PrintDay(const string& Day, const vector<map<string, string>>& Schedule) {
 void PrintMovieSchedule(const vector<map<string, string>>& Movies,
                         string MovieName) {
     PrintHours();
-    vector<map<string, string>> YesterdaySchedule;
-    vector<map<string, string>> TodaySchedule;
-    TodaySchedule =
+    vector<map<string, string>> YesterdaySchedule =
         SortSchedule(GetMovieScheduleOfDay(Movies, MovieName, "Saturday"));
+    vector<map<string, string>> TodaySchedule;
     for (auto Day : DAYS) {
-        PrintBoxes(TodaySchedule, YesterdaySchedule);
-        PrintDay(Day, TodaySchedule);
-        YesterdaySchedule = TodaySchedule;
         TodaySchedule =
             SortSchedule(GetMovieScheduleOfDay(Movies, MovieName, Day));
+        PrintBoxes(TodaySchedule,YesterdaySchedule);
+        PrintDay(Day, TodaySchedule);
+        YesterdaySchedule = TodaySchedule;
     }
-    YesterdaySchedule.clear();
-    PrintBoxes(TodaySchedule, YesterdaySchedule);
+    PrintBoxes(YesterdaySchedule, YesterdaySchedule);
 }
 
 void HandleUserInput(const vector<map<string, string>>& Movies) {
