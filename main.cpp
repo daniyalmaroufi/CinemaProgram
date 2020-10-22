@@ -387,10 +387,7 @@ void HandleUserInput(const vector<map<string, string>>& Movies) {
 }
 
 int main(int argc, char* argv[]) {
-    string FileName = SCHEDULE_FILE_NAME;
-    if (argc > 1) FileName = argv[1];
-
-    vector<map<string, string>> Movies = ReadCSVFile(FileName);
+    vector<map<string, string>> Movies = ReadCSVFile(argv[1]);
     while (true) HandleUserInput(Movies);
 
     return 0;
