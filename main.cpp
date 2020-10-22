@@ -4,6 +4,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 using namespace std;
@@ -155,6 +156,7 @@ vector<map<string, string>> SortSchedule(vector<map<string, string>> Schedule) {
 }
 
 float TimeToNumber(const string& Time) {
+    if (Time == "00:00") return 12 * 2;
     stringstream SStream(Time);
     string Hour, Minute;
     getline(SStream, Hour, ':');
@@ -176,13 +178,27 @@ void PrintCharacters(int Length, char Character) {
     for (int i = 0; i < Length; i++) cout << Character;
 }
 
+vector<pair<int, int>> ConvertScheduleToColumns(
+    const vector<map<string, string>>& Schedule) {
+    vector<pair<int, int>> Columns;
+    for (auto Movie : Schedule) {
+        Columns.push_back(make_pair(TimeToNumber(Movie["StartingTime"]),
+                                    TimeToNumber(Movie["FinishingTime"])));
+    }
+    return Columns;
+}
+
 void PrintBoxes(const vector<map<string, string>>& FirstSchedule,
                 const vector<map<string, string>>& SecondSchedule) {
     vector<map<string, string>> Schedule = FirstSchedule;
     if (!SecondSchedule.empty()) {
         Schedule.insert(Schedule.end(), SecondSchedule.begin(),
                         SecondSchedule.end());
-        Schedule = SortSchedule(Schedule);
+        sort(Schedule.begin(), Schedule.end(), CompareTimes);
+    }
+    vector<pair<int, int>> Columns = ConvertScheduleToColumns(Schedule);
+    for (auto c : Columns) {
+        cout << c.first << "->" << c.second << endl;
     }
     int Column = 1;
     for (auto Movie : Schedule) {
