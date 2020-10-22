@@ -136,8 +136,7 @@ bool HaveInterference(const map<string, string>& FirstMovie,
     return false;
 }
 
-vector<map<string, string>> SortScheduleOfDay(
-    vector<map<string, string>> Schedule) {
+vector<map<string, string>> SortSchedule(vector<map<string, string>> Schedule) {
     // Sort with CinemaName
     sort(Schedule.begin(), Schedule.end(), CompareCinemaNames);
     // Sort with Price
@@ -177,7 +176,14 @@ void PrintCharacters(int Length, char Character) {
     for (int i = 0; i < Length; i++) cout << Character;
 }
 
-void PrintSingleDayBox(const vector<map<string, string>>& Schedule) {
+void PrintBoxes(const vector<map<string, string>>& FirstSchedule,
+                const vector<map<string, string>>& SecondSchedule) {
+    vector<map<string, string>> Schedule = FirstSchedule;
+    if (!SecondSchedule.empty()) {
+        Schedule.insert(Schedule.end(), SecondSchedule.begin(),
+                        SecondSchedule.end());
+        Schedule = SortSchedule(Schedule);
+    }
     int Column = 1;
     for (auto Movie : Schedule) {
         int TileLength =
@@ -224,15 +230,19 @@ void PrintDay(const string& Day, const vector<map<string, string>>& Schedule) {
 void PrintMovieSchedule(const vector<map<string, string>>& Movies,
                         string MovieName) {
     PrintHours();
-    // for (auto Day : DAYS) PrintDay(Day);
-    vector<map<string, string>> DaySchedule;
+    vector<map<string, string>> YesterdaySchedule;
+    vector<map<string, string>> TodaySchedule;
+    TodaySchedule =
+        SortSchedule(GetMovieScheduleOfDay(Movies, MovieName, "Saturday"));
     for (auto Day : DAYS) {
-        DaySchedule =
-            SortScheduleOfDay(GetMovieScheduleOfDay(Movies, MovieName, Day));
-        PrintSingleDayBox(DaySchedule);
-        PrintDay(Day, DaySchedule);
+        PrintBoxes(TodaySchedule, YesterdaySchedule);
+        PrintDay(Day, TodaySchedule);
+        YesterdaySchedule = TodaySchedule;
+        TodaySchedule =
+            SortSchedule(GetMovieScheduleOfDay(Movies, MovieName, Day));
     }
-    PrintSingleDayBox(DaySchedule);
+    YesterdaySchedule.clear();
+    PrintBoxes(TodaySchedule, YesterdaySchedule);
 }
 
 void HandleUserInput(const vector<map<string, string>>& Movies) {
