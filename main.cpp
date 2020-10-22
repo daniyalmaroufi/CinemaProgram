@@ -14,6 +14,7 @@ const int DAY_TITLE_MAX_LENGTH = 10;
 const vector<string> DAYS = {"Saturday",  "Sunday",   "Monday", "Tuesday",
                              "Wednesday", "Thursday", "Friday"};
 const int HALF_HOUR_COLUMNS = 5;
+const int TOTAL_COLUMNS = 175;
 
 vector<string> ReadHeader(string Line) {
     vector<string> Header;
@@ -164,23 +165,40 @@ float TimeToNumber(const string& Time) {
 }
 
 int StartingTimeToColumn(const string& Time) {
-    return DAY_TITLE_MAX_LENGTH +
+    return DAY_TITLE_MAX_LENGTH + 1 +
            (TimeToNumber(Time) - TimeToNumber("08:00")) * HALF_HOUR_COLUMNS;
 }
 
-void PrintSpaces(int Length){
+int BlockLength(const string& StartingTime, const string& FinishingTime) {
+    return (TimeToNumber(FinishingTime) - TimeToNumber(StartingTime)) * 5 - 1;
+}
+
+void PrintSpaces(int Length) {
     for (int i = 0; i < Length; i++) cout << " ";
 }
 
 void PrintDay(const string& Day, const vector<map<string, string>>& Schedule) {
     cout << endl << Day;
     PrintSpaces(DAY_TITLE_MAX_LENGTH - Day.length());
-    for (int i = 0; i < DAY_TITLE_MAX_LENGTH - Day.length(); i++) cout << " ";
     int Column = DAY_TITLE_MAX_LENGTH + 1;
     for (auto Movie : Schedule) {
-        cout << "\t" << Movie["StartingTime"] << " to "
-             << Movie["FinishingTime"] << " at " << Movie["CinemaName"] << endl;
+        int TileLength =
+            BlockLength(Movie["StartingTime"], Movie["FinishingTime"]);
+        int StartingColumn = StartingTimeToColumn(Movie["StartingTime"]);
+
+        PrintSpaces(StartingColumn - Column);
+
+        if (StartingColumn + 1 != Column) cout << "|";
+
+        cout << Movie["CinemaName"];
+
+        PrintSpaces(TileLength - Movie["CinemaName"].length());
+
+        cout << "|";
+        Column = StartingColumn + TileLength + 2;
     }
+    PrintSpaces(TOTAL_COLUMNS - Column + 1);
+    cout << endl;
 }
 
 void PrintMovieSchedule(const vector<map<string, string>>& Movies,
